@@ -21,9 +21,9 @@ static void eth_stellaris_assign_mac(struct device *dev)
 {
 	u32_t value = 0x0;
 
-	value |= CONFIG_ETH_MAC_ADDR_0;
-	value |= CONFIG_ETH_MAC_ADDR_1 << 8;
-	value |= CONFIG_ETH_MAC_ADDR_2 << 16;
+	value |= 0xB4;
+	value |= 0xEE << 8;
+	value |= 0xD4 << 16;
 	value |= CONFIG_ETH_MAC_ADDR_3 << 24;
 	sys_write32(value, REG_MACIA0);
 
@@ -266,18 +266,15 @@ static void rx_isr(void *arg)
 	sys_write32(isr_val, REG_MACRIS);
 
 	if (isr_val & BIT_MACRIS_RXINT) {
-
 		eth_stellaris_rx(dev);
 	}
 
 	if (isr_val & BIT_MACRIS_TXEMP) {
-
 		dev_data->tx_err = false;
 		k_sem_give(&dev_data->tx_sem);
 	}
 
 	if (isr_val & BIT_MACRIS_TXER) {
-
 		SYS_LOG_ERR("Txn Frame Error");
 		eth_stats_update_errors_tx(dev_data->iface);
 		dev_data->tx_err = true;
@@ -285,10 +282,10 @@ static void rx_isr(void *arg)
 	}
 
 	if (isr_val & BIT_MACRIS_RXER) {
-
 		SYS_LOG_ERR("Error Frame Recieved");
 		eth_stellaris_rx_error(dev_data->iface);
 	}
+
 	irq_unlock(lock);
 }
 
@@ -330,9 +327,9 @@ struct eth_stellaris_config eth_cfg = {
 
 struct eth_stellaris_runtime eth_data = {
 	.mac_addr = {
-		(u8_t)CONFIG_ETH_MAC_ADDR_0,
-		(u8_t)CONFIG_ETH_MAC_ADDR_1,
-		(u8_t)CONFIG_ETH_MAC_ADDR_2,
+		0xB4,
+		0xEE,
+		0xD4,
 		(u8_t)CONFIG_ETH_MAC_ADDR_3,
 		(u8_t)CONFIG_ETH_MAC_ADDR_4,
 		(u8_t)CONFIG_ETH_MAC_ADDR_5
